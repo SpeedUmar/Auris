@@ -1,7 +1,4 @@
 import requests
-import asyncio
-import edge_tts
-import os
 
 from telegram import Update
 from telegram.ext import (
@@ -32,7 +29,7 @@ def ask_ai(text):
             URL,
             headers={
                 "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json",
+                "Content-Type": "application/json; charset=utf-8",
             },
             json={
                 "model": "llama-3.1-8b-instant",
@@ -46,11 +43,9 @@ def ask_ai(text):
                             "'Я Auris — интеллектуальный AI-помощник.' "
                             "Не выдавай себя за ChatGPT, OpenAI, Groq, Meta AI или другую компанию. "
                             "Отвечай дружелюбно и понятно. "
-                            "Отвечай кратко (1–4 предложения), если пользователь "
-                            "не просит подробностей. "
+                            "Отвечай кратко (1–4 предложения). "
                             "Если чего-то не знаешь — честно скажи об этом. "
-                            "Не придумывай факты. "
-                            "Твоя цель — быстро и точно помогать людям."
+                            "Не придумывай факты."
                         ),
                     },
                     {
@@ -63,12 +58,15 @@ def ask_ai(text):
         )
 
         r.raise_for_status()
+        r.encoding = "utf-8"
 
         return r.json()["choices"][0]["message"]["content"]
 
     except Exception as e:
         return f"❌ Ошибка AI: {e}"
-      # ==========================
+
+
+# ==========================
 # 💬 Команда /start
 # ==========================
 
@@ -79,30 +77,32 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ==========================
-# 🤖 Обработка сообщений
+# 🤖 Сообщения
 # ==========================
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
 
-    # Получаем ответ от AI
     answer = ask_ai(user_text)
 
-    # Отправляем ответ пользователю
     await update.message.reply_text(answer)
-  # ==========================
-# 🚀 Запуск бота
+
+
+# ==========================
+# 🚀 Запуск
 # ==========================
 
 def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
     )
 
     print("✅ Auris запущен!")
+
     app.run_polling()
 
 
