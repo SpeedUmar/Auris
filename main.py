@@ -16,7 +16,7 @@ from telegram.ext import (
 # 🔑 КЛЮЧИ
 # ==========================
 
-TELEGRAM_TOKEN = "ТВОЙ_TELEGRAM_TOKEN"
+TELEGRAM_TOKEN = "8084158704:AAHBTP9cg_Qm0n4WZ8daKXZ1eVIetVI0NAQ"
 GROQ_API_KEY = "ТВОЙ_GROQ_API_KEY"
 
 URL = "https://api.groq.com/openai/v1/chat/completions"
